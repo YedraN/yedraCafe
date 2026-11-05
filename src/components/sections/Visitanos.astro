@@ -26,9 +26,12 @@ const dayRange = (days: readonly DayOfWeek[]) => {
   const idx = days.map((d) => order.indexOf(d)).sort((x, y) => x - y);
   const consecutive = idx.every((v, i) => i === 0 || v === idx[i - 1] + 1);
   const names = idx.map((i) => dayNames[order[i]]);
-  const text = consecutive && names.length > 2 ? `${names[0]} a ${names[names.length - 1]}` : names.join(', ');
+  const text = consecutive && names.length > 2 ? `${names[0]} a ${names[names.length - 1]}` : new Intl.ListFormat('es', { type: 'conjunction' }).format(names);
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+// Días sin horario = cerrado.
+const openSet = new Set((hours.value ?? []).flatMap((h) => h.days));
+const closedDays = order.filter((d) => !openSet.has(d));
 ---
 
 <section class="visit section" id="visitanos" aria-labelledby="visit-title">
@@ -60,10 +63,12 @@ const dayRange = (days: readonly DayOfWeek[]) => {
                         </span>
                       </li>
                     ))}
-                    <li>
-                      <span>Sábado y domingo</span>
-                      <span class="hours__time">Cerrado</span>
-                    </li>
+                    {closedDays.length > 0 && (
+                      <li>
+                        <span>{dayRange(closedDays)}</span>
+                        <span class="hours__time">Cerrado</span>
+                      </li>
+                    )}
                   </ul>
                   {hours.status === 'pendiente' && <Pending label="Horario de Google Maps, por confirmar" note={hours.note} />}
                 </>

@@ -35,7 +35,7 @@ Revisado con la skill `seo-audit` (técnico, on-page y local). Las posiciones en
 
 `@graph` con `CafeOrCoffeeShop`, `WebSite` y `WebPage`, generado por `src/lib/schema.ts`. Incluye nombre, descripción, url, imagen, logo, `PostalAddress`, `GeoCoordinates`, `hasMap`, `containedInPlace` (Benicalap) y `sameAs` (Instagram y Facebook).
 
-`telephone` ya está incluido (confirmado en Google Maps e InTravel). Se añadirán solos cuando se confirmen en `business.ts`: `email`, `openingHoursSpecification` y `hasMenu` (con la carta real).
+`telephone` y `openingHoursSpecification` ya están incluidos. Se añadirán solos cuando se confirmen en `business.ts`: `email` y `hasMenu` (con la carta real).
 
 **A propósito no se incluye** `aggregateRating`: las reseñas propias no dan estrellas en Google, y la cifra de Google Maps (4,4, 35 reseñas) cambia con el tiempo.
 
@@ -44,7 +44,7 @@ Valídalo en producción con [Rich Results Test](https://search.google.com/test/
 ## Acciones fuera de la web (las que más impacto tienen)
 
 1. **Google Business Profile**: reclamar o verificar la ficha; categoría principal «Cafetería»; mismo nombre, dirección y teléfono que la web; horario; fotos reales; enlace a la web con UTM (`?utm_source=gbp&utm_medium=organic`).
-2. **Coherencia NAP**: actualizar el teléfono de Facebook (muestra +34 747 42 34 73), unificar el horario entre Google y Facebook, y quitar `yedracafe.com` de Google Maps y de los directorios si no se va a recuperar ese dominio.
+2. **Coherencia NAP**: actualizar el teléfono de Facebook (muestra +34 747 42 34 73), **corregir el horario de Google Maps** (muestra L–V 7:00–15:00; el real es L–V 7:00–19:00 y S 7:00–15:00) y el de Facebook, y quitar `yedracafe.com` de Google Maps y de los directorios si no se va a recuperar ese dominio.
 3. **Instagram y Facebook**: enlazar la web en la bio.
 4. **Reseñas**: pedirlas de forma natural en el local (sin incentivos) y responderlas.
 5. **Search Console**: dar de alta el dominio, enviar el sitemap y revisar la indexación en 2–4 semanas.
@@ -52,5 +52,4 @@ Valídalo en producción con [Rich Results Test](https://search.google.com/test/
 ## Pendiente para producción
 
 - Definir `SITE_URL` con el dominio real; los canonical y el sitemap dependen de él.
-- Confirmar el horario: es crítico para el SEO local y entrará en el schema al confirmarlo.
 - Obtener permiso para las fotos actuales o sustituirlas por originales. Ya llevan `alt` descriptivo.

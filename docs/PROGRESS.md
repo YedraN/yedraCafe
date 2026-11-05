@@ -21,6 +21,7 @@
 - Datos de Google Maps: **teléfono confirmado** (651 11 42 39, también en el JSON-LD) y **horario** L–V 7:00–15:00, que se muestra marcado como pendiente porque contradice a Facebook.
 - La carta provisional se ajustó a lo que aparece en las fotos del negocio. Sigue marcada como provisional y sin precios.
 - Se regeneraron la imagen OG, el favicon y el icono de Apple.
+- El cliente confirmó el horario: lunes a viernes de 7:00 a 19:00 y sábado de 7:00 a 15:00. Los días cerrados se calculan a partir de los datos.
 
 ## Comprobaciones realizadas
 
@@ -44,7 +45,7 @@
 
 ## Pendiente: contenido del negocio (bloquea producción)
 
-- [ ] Confirmar el horario (Google dice L–V; Facebook, L–S)
+- [x] Horario: L–V 7:00–19:00, S 7:00–15:00, D cerrado (confirmado por el cliente; ya en la web y en el JSON-LD)
 - [x] Teléfono: 651 11 42 39 (Google Maps e InTravel)
 - [ ] Carta y precios reales (ahora es provisional, con aviso)
 - [ ] **Permiso del propietario** para usar las fotos de Google Maps, o los originales

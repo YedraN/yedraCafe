@@ -7,6 +7,7 @@ import type { Address, OpeningHours, SocialProfile, Verified } from './types';
 
 const SOURCES = {
   google: 'Google Maps: ficha «Yedra cafe» (consultada el 5/11/2026)',
+  cliente: 'Confirmado por el cliente (6/11/2026)',
   facebook: 'Facebook: facebook.com/people/Yedra-Café/100083203238752',
   instagram: 'Instagram: @yedracafe',
   intravel: 'InTravel (directorio, ficha no verificada por el negocio)',
@@ -76,18 +77,19 @@ export const business: Business & {
 
   /** Días de apertura: solo una fuente (Facebook, leída de forma indirecta). */
   openDays: {
-    status: 'pendiente',
+    status: 'confirmado',
     value: 'De lunes a sábado',
-    note: 'Facebook indica apertura de lunes a sábado; falta confirmarlo y conocer las horas.',
-    sources: [SOURCES.facebook],
+    sources: [SOURCES.cliente, SOURCES.facebook],
   },
 
-  /** Horario de Google Maps. Se muestra marcado como pendiente hasta que lo confirme el negocio. */
+  /** Confirmado por el cliente. Google Maps muestra otro horario (L–V 7:00–15:00): actualizar la ficha. */
   hours: {
-    status: 'pendiente',
-    value: [{ days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '07:00', closes: '15:00' }],
-    note: 'Según Google Maps (lunes a viernes, 7:00–15:00; sábado y domingo cerrado). Facebook habla de lunes a sábado y algunas reseñas mencionan aperturas irregulares: confirmar con el negocio.',
-    sources: [SOURCES.google],
+    status: 'confirmado',
+    value: [
+      { days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '07:00', closes: '19:00' },
+      { days: ['Saturday'], opens: '07:00', closes: '15:00' },
+    ],
+    sources: [SOURCES.cliente],
   },
 
   /** Lo que sirve, según Facebook e InTravel. */

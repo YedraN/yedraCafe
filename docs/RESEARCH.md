@@ -28,6 +28,7 @@ Los estados viven en `src/data/business.ts` (tipo `Verified<T>`). El JSON-LD sol
 ## Datos confirmados (publicados)
 
 - Nombre: Yedra Café.
+- Horario (confirmado por el cliente el 6/11/2026): lunes a viernes de 7:00 a 19:00, sábado de 7:00 a 15:00, domingo cerrado. **Google Maps muestra un horario desactualizado** (L–V 7:00–15:00, S–D cerrado): conviene corregirlo en la ficha.
 - Teléfono: +34 651 11 42 39 (coinciden Google Maps e InTravel; el de Facebook, +34 747 42 34 73, parece antiguo).
 - Dirección: C/ de José Grollo, 45, 46025 València (Benicalap).
 - Coordenadas: 39.4908734, -0.3907989 (nodo de dirección de OSM).
@@ -39,7 +40,6 @@ Los estados viven en `src/data/business.ts` (tipo `Verified<T>`). El JSON-LD sol
 
 | Dato | Situación | Dónde se cambia |
 |---|---|---|
-| Horario | Google Maps: lunes a viernes 7:00–15:00, sábado y domingo cerrado. Facebook dice «de lunes a sábado» y dos reseñas se quejan de aperturas irregulares. Se muestra el de Google con la marca «por confirmar» y **no se publica en el schema**. | `business.hours` |
 | Correo | yedracafebenicalap@gmail.com, solo por un resumen de buscador. | `business.email` |
 | Vermut y cerveza fría | Solo Facebook (indirecto). | `business.drinks` |
 | Carta y precios | No hay carta pública fiable. La web usa una carta **provisional** con avisos visibles. | `src/data/menu.ts` |
@@ -53,7 +53,6 @@ Los estados viven en `src/data/business.ts` (tipo `Verified<T>`). El JSON-LD sol
 ## Preguntas para el propietario
 
 1. ¿El 651 11 42 39 es el teléfono actual?
-2. ¿El horario es de lunes a viernes de 7:00 a 15:00? ¿Abrís los sábados?
 3. ¿Podéis pasar la carta con precios, o una foto de la pizarra?
 4. ¿Nos dais permiso para usar en la web las fotos que subisteis a Google Maps? ¿Tenéis los originales o fotos más recientes?
 5. ¿Tenéis el logotipo del rótulo en vectorial (SVG, PDF o AI)?

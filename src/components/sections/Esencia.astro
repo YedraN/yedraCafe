@@ -1,17 +1,29 @@
 ---
-import { business } from '../../data/business';
-import { esenciaFrame } from '../../data/gallery';
-import PhotoFrame from '../ui/PhotoFrame.astro';
-import Pending from '../ui/Pending.astro';
-import SplitWords from '../ui/SplitWords.astro';
+import { business } from "../../data/business";
+import { esenciaFrame } from "../../data/gallery";
+import PhotoFrame from "../ui/PhotoFrame.astro";
+import Pending from "../ui/Pending.astro";
+import SplitWords from "../ui/SplitWords.astro";
 
 const { drinks } = business;
 
 // El día en Yedra: es una secuencia real (mañana, media mañana, mediodía), por eso va en orden.
 const moments = [
-  { when: 'Por la mañana', what: 'Desayunos', text: 'Un café y algo para empezar el día.' },
-  { when: 'A media mañana', what: 'Almuerzo', text: 'La pausa de media mañana, a la valenciana.' },
-  { when: 'Al mediodía', what: 'Comidas', text: 'Para comer cerca de casa o del trabajo.' },
+  {
+    when: "Por la mañana",
+    what: "Desayunos",
+    text: "Un café y algo para empezar el día.",
+  },
+  {
+    when: "A media mañana",
+    what: "Almuerzo",
+    text: "La pausa de media mañana, a la valenciana.",
+  },
+  {
+    when: "Al mediodía",
+    what: "Comidas",
+    text: "Para comer cerca de casa o del trabajo.",
+  },
 ] as const;
 ---
 
@@ -24,17 +36,23 @@ const moments = [
 
     <div class="esencia__copy">
       <p class="lede" data-reveal="fade">
-        Yedra Café está en la calle José Grollo, en Benicalap. Sirve desayunos, almuerzos y comidas, para tomar
-        en el local o para llevar.
+        Yedra Café está en la calle José Grollo, en Benicalap. Sirve desayunos,
+        almuerzos y comidas, para tomar en el local o para llevar.
       </p>
       <p data-reveal="fade" style="--i:1">
-        La yedra se agarra a la pared y sigue verde todo el año. Un café de barrio funciona igual: está ahí por la
-        mañana, a media mañana y al mediodía, y la gente vuelve.
+        La hiedra se agarra a la pared y sigue verde todo el año. Un café de
+        barrio funciona igual: está ahí por la mañana, a media mañana y al
+        mediodía, y la gente vuelve.
       </p>
     </div>
 
     <div class="esencia__photo">
-      <PhotoFrame frame={esenciaFrame} ratio="3 / 2" sizes="(min-width: 64rem) 52vw, 100vw" seed={3} />
+      <PhotoFrame
+        frame={esenciaFrame}
+        ratio="3 / 2"
+        sizes="(min-width: 64rem) 52vw, 100vw"
+        seed={3}
+      />
     </div>
 
     <ol class="esencia__day" role="list" aria-label="El día en Yedra Café">
@@ -47,7 +65,10 @@ const moments = [
             <p class="moment__text">{m.text}</p>
             {i === 2 && (
               <p class="moment__extra">
-                {drinks.value}. <Pending note={drinks.status === 'pendiente' ? drinks.note : undefined} />
+                {drinks.value}.{" "}
+                <Pending
+                  note={drinks.status === "pendiente" ? drinks.note : undefined}
+                />
               </p>
             )}
           </li>
@@ -101,7 +122,7 @@ const moments = [
   }
 
   .esencia__day::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 5px;
     top: 0.6rem;
