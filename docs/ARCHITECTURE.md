@@ -25,6 +25,7 @@ src/
     map.generated.json     calles reales (generado; no editar a mano)
   lib/
     vine.ts                geometría de la yedra (Bézier, PRNG determinista)
+    hours.ts               formato del horario («Lunes a viernes», días cerrados)
     schema.ts              JSON-LD a partir de data/
   layouts/BaseLayout.astro head SEO, fuentes, JSON-LD, skip link, header y footer
   components/
@@ -35,7 +36,7 @@ src/
     map/                   NeighborhoodMap
   scripts/motion.ts        un único IntersectionObserver para los revelados
   styles/                  tokens.css y global.css
-  pages/                   index, aviso-legal, 404, robots.txt.ts, sitemap.xml.ts
+  pages/                   index, aviso-legal, 404, mantenimiento, robots.txt.ts, sitemap.xml.ts
   assets/fotos/            fotos reales (instrucciones en el README)
 public/
   favicon.svg, apple-touch-icon.png, og/yedra-cafe.png
@@ -87,6 +88,20 @@ Es un sitio estático (`dist/`), apto para cualquier CDN (Netlify, Vercel, Cloud
 - **Obligatorio**: definir `SITE_URL` con el dominio final. Si no, canonical, sitemap y Open Graph usan el marcador `https://yedracafe.example`.
 - `build.format: 'file'` genera `/aviso-legal.html`. Los hosts habituales sirven `/aviso-legal` sin extensión; compruébalo en el elegido.
 - `404.html` se genera para hosts que lo usan automáticamente.
+
+### Modo mantenimiento
+
+`/mantenimiento` (`src/pages/mantenimiento.astro`) es una página suelta, sin cabecera ni pie (`<BaseLayout bare>`), con `noindex` y fuera del sitemap. Muestra horario, dirección, teléfono, «Cómo llegar» e Instagram, todo leído de `src/data/business.ts`, porque el bar sigue abierto aunque la web no.
+
+Para activarla hay que redirigir **todo el tráfico** a esa página desde el hosting, sin incluir `/_astro/*`, `/favicon.svg` ni `/map/*`. Lo ideal es responder con estado **503** y `Retry-After`, para que Google entienda que es temporal y no indexe la página. Ejemplo en Netlify (`public/_redirects`, solo mientras dure el mantenimiento):
+
+```
+/_astro/*        /_astro/:splat        200
+/favicon.svg     /favicon.svg          200
+/*               /mantenimiento.html   503
+```
+
+Algunos hosts (Cloudflare Pages, GitHub Pages) no permiten devolver 503 desde una redirección; en ellos basta con una reescritura con estado 200, y la página ya lleva `noindex`. Si el mantenimiento dura más de un par de días, hazlo en horario de poco tráfico y quita la redirección cuanto antes.
 
 ## Ampliaciones previstas
 

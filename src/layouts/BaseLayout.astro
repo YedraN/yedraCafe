@@ -14,6 +14,8 @@ interface Props {
   noindex?: boolean;
   /** Cabecera sobre fondo oscuro desde arriba (home) o clara (páginas interiores). */
   headerStart?: 'dark' | 'light';
+  /** Sin cabecera ni pie: para páginas sueltas como la de mantenimiento. */
+  bare?: boolean;
 }
 
 const {
@@ -22,6 +24,7 @@ const {
   path = '/',
   noindex = false,
   headerStart = 'dark',
+  bare = false,
 } = Astro.props;
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
@@ -70,11 +73,11 @@ const jsonLd = JSON.stringify(pageGraph(siteUrl, { url: canonical, title, descri
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
-    <Header start={headerStart} />
+    {!bare && <Header start={headerStart} />}
     <main id="contenido" tabindex="-1">
       <slot />
     </main>
-    <Footer />
+    {!bare && <Footer />}
     <script>
       import '../scripts/motion';
     </script>

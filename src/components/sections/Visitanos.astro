@@ -5,33 +5,13 @@ import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import Pending from '../ui/Pending.astro';
 import SplitWords from '../ui/SplitWords.astro';
-import type { DayOfWeek } from '../../data/types';
+import { scheduleRows } from '../../lib/hours';
 
 const { address, openDays, hours, phone, transit } = business;
 const a = address.value;
 const instagram = business.social.find((s) => s.id === 'instagram');
 
-const dayNames: Record<DayOfWeek, string> = {
-  Monday: 'lunes',
-  Tuesday: 'martes',
-  Wednesday: 'miércoles',
-  Thursday: 'jueves',
-  Friday: 'viernes',
-  Saturday: 'sábado',
-  Sunday: 'domingo',
-};
-const order: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-// «Lunes a viernes» si los días son consecutivos; si no, la lista.
-const dayRange = (days: readonly DayOfWeek[]) => {
-  const idx = days.map((d) => order.indexOf(d)).sort((x, y) => x - y);
-  const consecutive = idx.every((v, i) => i === 0 || v === idx[i - 1] + 1);
-  const names = idx.map((i) => dayNames[order[i]]);
-  const text = consecutive && names.length > 2 ? `${names[0]} a ${names[names.length - 1]}` : new Intl.ListFormat('es', { type: 'conjunction' }).format(names);
-  return text.charAt(0).toUpperCase() + text.slice(1);
-};
-// Días sin horario = cerrado.
-const openSet = new Set((hours.value ?? []).flatMap((h) => h.days));
-const closedDays = order.filter((d) => !openSet.has(d));
+const schedule = hours.value ? scheduleRows(hours.value) : [];
 ---
 
 <section class="visit section" id="visitanos" aria-labelledby="visit-title">
@@ -55,20 +35,12 @@ const closedDays = order.filter((d) => !openSet.has(d));
               hours.value ? (
                 <>
                   <ul class="hours" role="list">
-                    {hours.value.map((h) => (
+                    {schedule.map((row) => (
                       <li>
-                        <span>{dayRange(h.days)}</span>
-                        <span class="hours__time">
-                          {h.opens}–{h.closes}
-                        </span>
+                        <span>{row.days}</span>
+                        <span class="hours__time">{row.time}</span>
                       </li>
                     ))}
-                    {closedDays.length > 0 && (
-                      <li>
-                        <span>{dayRange(closedDays)}</span>
-                        <span class="hours__time">Cerrado</span>
-                      </li>
-                    )}
                   </ul>
                   {hours.status === 'pendiente' && <Pending label="Horario de Google Maps, por confirmar" note={hours.note} />}
                 </>

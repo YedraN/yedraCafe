@@ -1,0 +1,295 @@
+---
+/**
+ * Página de mantenimiento. Se sirve en /mantenimiento y no se indexa.
+ * Para activarla hay que redirigir el tráfico desde el hosting (ver docs/ARCHITECTURE.md):
+ * idealmente con estado 503 y cabecera Retry-After, para que Google no la indexe como contenido.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import IvyVine from '../components/art/IvyVine.astro';
+import Button from '../components/ui/Button.astro';
+import Icon from '../components/ui/Icon.astro';
+import Wordmark from '../components/ui/Wordmark.astro';
+import { business, maps } from '../data/business';
+import { scheduleRows } from '../lib/hours';
+
+const { address, hours, phone } = business;
+const a = address.value;
+const schedule = hours.status === 'confirmado' ? scheduleRows(hours.value) : [];
+const tel = phone.status === 'confirmado' ? phone.value : null;
+const instagram = business.social.find((s) => s.id === 'instagram');
+---
+
+<BaseLayout
+  title="Web en mantenimiento | Yedra Café"
+  description="Estamos poniendo a punto la web de Yedra Café. El bar sigue abierto en la C/ de José Grollo 45, Benicalap (València)."
+  path="/mantenimiento"
+  noindex
+  bare
+>
+  <section class="mt">
+    <div class="mt__vine">
+      <IvyVine
+        animate="load"
+        delay={300}
+        viewBox="0 0 400 700"
+        start={[260, 720]}
+        segments={[
+          [[150, 640], [330, 540], [230, 440]],
+          [[130, 340], [300, 250], [220, 150]],
+          [[170, 80], [250, 30], [300, -10]],
+        ]}
+        leafCount={16}
+        leafSize={72}
+        seed={503}
+      />
+    </div>
+
+    <div class="wrap mt__top">
+      <span class="mt__brand"><Wordmark /></span>
+    </div>
+
+    <div class="wrap mt__grid">
+      <div class="mt__copy">
+        <h1>Estamos poniendo la web a punto.</h1>
+        <p class="mt__lede">
+          Volvemos en breve. El bar sigue abierto como siempre: te esperamos en José Grollo.
+        </p>
+        <div class="mt__ctas">
+          <Button href={maps.directions} icon="directions" external>Cómo llegar</Button>
+          {
+            instagram && (
+              <Button href={instagram.url} variant="line" icon="instagram" external>
+                {instagram.handle}
+              </Button>
+            )
+          }
+        </div>
+      </div>
+
+      <dl class="mt__card">
+        {
+          schedule.length > 0 && (
+            <div class="mt__fact">
+              <dt>
+                <Icon name="clock" size={18} /> Horario
+              </dt>
+              <dd>
+                <ul class="mt__hours" role="list">
+                  {schedule.map((row) => (
+                    <li>
+                      <span>{row.days}</span>
+                      <span class="mt__time">{row.time}</span>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )
+        }
+        <div class="mt__fact">
+          <dt><Icon name="pin" size={18} /> Dónde</dt>
+          <dd>
+            <address>
+              {a.street}<br />{a.postalCode} {a.district}, {a.locality}
+            </address>
+          </dd>
+        </div>
+        {
+          tel && (
+            <div class="mt__fact">
+              <dt>
+                <Icon name="phone" size={18} /> Teléfono
+              </dt>
+              <dd>
+                <a href={`tel:${tel.replace(/\s/g, '')}`}>{tel.replace(/^\+34\s*/, '')}</a>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </div>
+
+    <div class="mt__damero" aria-hidden="true"></div>
+  </section>
+</BaseLayout>
+
+<style>
+  .mt {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100svh;
+    background: var(--toldo);
+    color: var(--cal);
+    overflow: clip;
+  }
+
+  .mt__top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    height: var(--header-h);
+  }
+
+  .mt__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-7);
+    align-content: center;
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .mt__copy {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  h1 {
+    font-size: var(--step-5);
+    line-height: 1.02;
+    max-width: 12ch;
+  }
+
+  .mt__lede {
+    font-size: var(--step-1);
+    max-width: 30ch;
+    color: rgb(var(--cal-rgb) / 0.9);
+  }
+
+  .mt__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  /* Tarjeta ocre como un ticket del local */
+  .mt__card {
+    display: grid;
+    align-self: center;
+    max-width: 26rem;
+    padding: var(--space-3) var(--space-6);
+    background: var(--ocre);
+    color: var(--pizarra);
+  }
+
+  .mt__fact {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-4);
+  }
+
+  .mt__fact + .mt__fact {
+    border-top: 1px solid rgb(var(--pizarra-rgb) / 0.22);
+  }
+
+  .mt__fact dt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--toldo-osc);
+  }
+
+  .mt__fact address {
+    font-style: normal;
+  }
+
+  .mt__fact a {
+    font-weight: 600;
+    font-size: var(--step-1);
+    text-decoration-thickness: 1.5px;
+  }
+
+  .mt__hours {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .mt__hours li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+
+  .mt__time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  /* En móvil la yedra pasaría por detrás del texto: solo desde tablet. */
+  .mt__vine {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 85%;
+    aspect-ratio: 4 / 7;
+    opacity: 0.85;
+  }
+
+  @media (min-width: 40rem) {
+    .mt__vine {
+      display: block;
+    }
+  }
+
+  .mt__damero {
+    --tile: clamp(24px, 3vw, 40px);
+    position: relative;
+    z-index: 1;
+    height: calc(var(--tile) * 2);
+    background: conic-gradient(from 45deg, var(--baldosa) 25%, var(--ocre) 0 50%, var(--baldosa) 0 75%, var(--ocre) 0) 0 0 /
+      var(--tile) var(--tile);
+  }
+
+  @media (min-width: 56rem) {
+    .mt__grid {
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .mt__card {
+      justify-self: end;
+      margin-right: clamp(0rem, 6vw, 6rem);
+    }
+  }
+
+  /* Entrada: texto y tarjeta aparecen tras el arranque de la yedra */
+  .mt__copy,
+  .mt__card {
+    animation: mt-in 800ms var(--ease-out) both;
+  }
+
+  .mt__card {
+    animation-delay: 180ms;
+  }
+
+  @keyframes mt-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mt__copy,
+    .mt__card {
+      animation-name: mt-fade;
+    }
+  }
+
+  @keyframes mt-fade {
+    from {
+      opacity: 0;
+    }
+  }
+</style>

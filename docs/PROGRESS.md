@@ -22,6 +22,7 @@
 - La carta provisional se ajustó a lo que aparece en las fotos del negocio. Sigue marcada como provisional y sin precios.
 - Se regeneraron la imagen OG, el favicon y el icono de Apple.
 - El cliente confirmó el horario: lunes a viernes de 7:00 a 19:00 y sábado de 7:00 a 15:00. Los días cerrados se calculan a partir de los datos.
+- Nueva página `/mantenimiento`, en la línea de la 404: sin navegación, `noindex` y con la información útil del bar (horario, dirección, teléfono, cómo llegar e Instagram). Revisada a 375, 820 y 1440 px, sin errores ni scroll horizontal. Cómo activarla: ARCHITECTURE.md.
 
 ## Comprobaciones realizadas
 
