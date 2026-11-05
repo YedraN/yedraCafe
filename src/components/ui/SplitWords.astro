@@ -1,0 +1,26 @@
+---
+/**
+ * Parte un titular en palabras enmascaradas para revelarlas una a una.
+ * El texto completo sigue siendo un único nodo legible para lectores de pantalla y buscadores.
+ * El elemento contenedor debe llevar data-reveal="words" (scroll) o una animación propia (hero).
+ */
+interface Props {
+  text: string;
+  /** Desplaza el índice para encadenar varios SplitWords dentro de un mismo titular. */
+  offset?: number;
+}
+
+const { text, offset = 0 } = Astro.props;
+const words = text.split(/\s+/).filter(Boolean);
+---
+
+{
+  words.map((word, i) => (
+    <>
+      <span class="split-word" style={`--w:${i + offset}`}>
+        <span>{word}</span>
+      </span>
+      {i < words.length - 1 && ' '}
+    </>
+  ))
+}

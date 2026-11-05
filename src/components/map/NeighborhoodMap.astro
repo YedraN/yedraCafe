@@ -1,0 +1,289 @@
+---
+/**
+ * Mapa ilustrado del entorno de Yedra Café, dibujado con datos reales de OpenStreetMap
+ * (scripts/generate-map.mjs). Sin iframes ni cookies de terceros: el enlace a Google Maps
+ * queda para quien quiera navegar.
+ */
+import map from '../../data/map.generated.json';
+import { LEAF_PATH } from '../../lib/vine';
+
+const rad = (map.streetLabel.angle * Math.PI) / 180;
+// Etiqueta de la calle: desplazada a lo largo de la vía y separada del trazo para no tapar el pin.
+const label = {
+  x: map.streetLabel.x + Math.cos(rad) * 150 + Math.sin(rad) * 22,
+  y: map.streetLabel.y + Math.sin(rad) * 150 - Math.cos(rad) * 22,
+};
+const { cafe, tramStop } = map;
+---
+
+<figure class="map" data-reveal-trigger>
+  <div class="map__canvas">
+    <img
+      class="map__blocks"
+      src="/map/benicalap-manzanas.svg"
+      alt=""
+      width={map.width}
+      height={map.height}
+      loading="lazy"
+      decoding="async"
+    />
+    <svg
+      class="map__svg"
+      viewBox={map.viewBox}
+      preserveAspectRatio="xMidYMid slice"
+      role="img"
+      aria-labelledby="map-title map-desc"
+    >
+      <title id="map-title">Mapa de la zona de Yedra Café en Benicalap</title>
+      <desc id="map-desc">
+        Yedra Café está en la calle de José Grollo, 45. La parada de tranvía Benicalap queda a unos {map.tramDistanceM} metros
+        al sur.
+      </desc>
+
+      <path class="map__parks" d={map.parks} />
+      <path class="map__minor" d={map.minor} />
+      <path class="map__major" d={map.major} />
+      <path class="map__tram" d={map.tram} />
+      <path class="map__street" d={map.highlight} pathLength="1" />
+
+      <text
+        class="map__street-label"
+        x={label.x}
+        y={label.y}
+        transform={`rotate(${map.streetLabel.angle} ${label.x} ${label.y})`}
+        text-anchor="middle">C/ José Grollo</text
+      >
+
+      <g class="map__stop" transform={`translate(${tramStop.x} ${tramStop.y})`}>
+        <rect x="-15" y="-15" width="30" height="30" rx="4" />
+        <path d="M-6 -7h12M0 -7v14" />
+        <text x="24" y="7">Tranvía Benicalap</text>
+      </g>
+
+      <g class="map__pin" transform={`translate(${cafe.x} ${cafe.y})`}>
+        <circle class="map__pulse" r="34" />
+        <g class="map__pin-body">
+          <circle r="30" />
+          <g transform="rotate(-20) scale(0.36) translate(-50 -50)">
+            <path d={LEAF_PATH} />
+          </g>
+        </g>
+        <text x="-44" y="8" text-anchor="end">Yedra Café</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption class="map__credit">
+    Mapa:
+    <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer"
+      >© colaboradores de OpenStreetMap<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a
+    >
+  </figcaption>
+</figure>
+
+<style>
+  .map {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .map__canvas {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--pizarra);
+  }
+
+  @media (min-width: 40rem) {
+    .map__canvas {
+      aspect-ratio: 1200 / 813;
+    }
+  }
+
+  .map__blocks,
+  .map__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .map__blocks {
+    object-fit: cover;
+    opacity: 0.9;
+  }
+
+  .map__svg {
+    overflow: hidden;
+  }
+
+  .map__parks {
+    fill: var(--yedra-2);
+  }
+
+  .map__minor,
+  .map__major,
+  .map__tram,
+  .map__street {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .map__minor {
+    stroke: rgb(var(--cal-rgb) / 0.2);
+    stroke-width: 7;
+  }
+
+  .map__major {
+    stroke: rgb(var(--cal-rgb) / 0.34);
+    stroke-width: 13;
+  }
+
+  .map__tram {
+    stroke: var(--cobre);
+    stroke-width: 4;
+    stroke-dasharray: 2 10;
+  }
+
+  .map__street {
+    stroke: var(--ocre);
+    stroke-width: 10;
+  }
+
+  .map__street-label,
+  .map__stop text,
+  .map__pin text {
+    font-family: var(--ff-text);
+    font-weight: 600;
+    paint-order: stroke;
+    stroke: var(--pizarra);
+    stroke-width: 6px;
+    stroke-linejoin: round;
+  }
+
+  .map__street-label {
+    fill: var(--ocre);
+    font-size: 22px;
+  }
+
+  .map__stop rect {
+    fill: var(--cobre);
+  }
+
+  .map__stop path {
+    fill: none;
+    stroke: var(--pizarra);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .map__stop text {
+    fill: var(--cal);
+    font-size: 22px;
+  }
+
+  .map__pin-body circle {
+    fill: var(--cal);
+  }
+
+  .map__pin-body path {
+    fill: var(--toldo);
+  }
+
+  .map__pin text {
+    fill: var(--cal);
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: 34px;
+  }
+
+  .map__pulse {
+    fill: none;
+    stroke: var(--ocre);
+    stroke-width: 3;
+    opacity: 0;
+  }
+
+  .map__credit {
+    font-size: var(--step--1);
+    color: var(--pizarra-2);
+  }
+
+  /* ---------- Animación al entrar: la calle se dibuja y el pin aterriza ---------- */
+  :global(.js) .map .map__street {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+  }
+
+  :global(.js) .map .map__pin-body,
+  :global(.js) .map .map__pin text {
+    opacity: 0;
+  }
+
+  :global(.js) .map[data-visible] .map__street {
+    animation: map-draw 1400ms var(--ease-in-out) 200ms forwards;
+  }
+
+  :global(.js) .map[data-visible] .map__pin-body {
+    animation: map-pin 600ms var(--ease-out) 1100ms forwards;
+  }
+
+  :global(.js) .map[data-visible] .map__pin text {
+    animation: map-fade 500ms var(--ease-out) 1400ms forwards;
+  }
+
+  :global(.js) .map[data-visible] .map__pulse {
+    animation: map-pulse 1400ms var(--ease-out) 1400ms 2;
+  }
+
+  @keyframes map-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes map-pin {
+    from {
+      opacity: 0;
+      transform: translateY(-24px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes map-fade {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes map-pulse {
+    from {
+      opacity: 0.9;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .map .map__street {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+    }
+
+    :global(.js) .map[data-visible] .map__street,
+    :global(.js) .map[data-visible] .map__pulse {
+      animation: none;
+    }
+
+    :global(.js) .map[data-visible] .map__pin-body,
+    :global(.js) .map[data-visible] .map__pin text {
+      animation: map-fade 300ms ease forwards;
+    }
+  }
+</style>

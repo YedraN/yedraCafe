@@ -1,0 +1,88 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import { site } from '../data/site';
+import { pageGraph } from '../lib/schema';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Ruta relativa al sitio, sin barra final (p. ej. "/aviso-legal"). */
+  path?: string;
+  noindex?: boolean;
+  /** Cabecera sobre fondo oscuro desde arriba (home) o clara (páginas interiores). */
+  headerStart?: 'dark' | 'light';
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  path = '/',
+  noindex = false,
+  headerStart = 'dark',
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(path, siteUrl);
+const ogImage = new URL(site.ogImage, siteUrl);
+const jsonLd = JSON.stringify(pageGraph(siteUrl, { url: canonical, title, description }));
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical.href} />}
+
+    <!-- Marca JS antes de pintar: los revelados solo ocultan contenido si hay JS. -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-text" preload />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <meta name="theme-color" content={site.themeColor} />
+    <meta name="format-detection" content="telephone=no" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Yedra Café, cafetería de barrio en Benicalap" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="geo.region" content="ES-V" />
+    <meta name="geo.placename" content="Benicalap, València" />
+
+    <script type="application/ld+json" set:html={jsonLd} />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <Header start={headerStart} />
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

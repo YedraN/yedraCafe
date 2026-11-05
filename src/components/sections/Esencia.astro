@@ -1,0 +1,210 @@
+---
+import { business } from '../../data/business';
+import { esenciaFrame } from '../../data/gallery';
+import PhotoFrame from '../ui/PhotoFrame.astro';
+import Pending from '../ui/Pending.astro';
+import SplitWords from '../ui/SplitWords.astro';
+
+const { drinks } = business;
+
+// El día en Yedra: es una secuencia real (mañana, media mañana, mediodía), por eso va en orden.
+const moments = [
+  { when: 'Por la mañana', what: 'Desayunos', text: 'Un café y algo para empezar el día.' },
+  { when: 'A media mañana', what: 'Almuerzo', text: 'La pausa de media mañana, a la valenciana.' },
+  { when: 'Al mediodía', what: 'Comidas', text: 'Para comer cerca de casa o del trabajo.' },
+] as const;
+---
+
+<section class="esencia section" id="esencia" aria-labelledby="esencia-title">
+  <div class="wrap esencia__grid">
+    <h2 class="esencia__title" id="esencia-title" data-reveal="words">
+      <span class="visually-hidden">Nuestra esencia: </span>
+      <SplitWords text="Un sitio fijo en el día del barrio." />
+    </h2>
+
+    <div class="esencia__copy">
+      <p class="lede" data-reveal="fade">
+        Yedra Café está en la calle José Grollo, en Benicalap. Sirve desayunos, almuerzos y comidas, para tomar
+        en el local o para llevar.
+      </p>
+      <p data-reveal="fade" style="--i:1">
+        La yedra se agarra a la pared y sigue verde todo el año. Un café de barrio funciona igual: está ahí por la
+        mañana, a media mañana y al mediodía, y la gente vuelve.
+      </p>
+    </div>
+
+    <div class="esencia__photo">
+      <PhotoFrame frame={esenciaFrame} ratio="3 / 2" sizes="(min-width: 64rem) 52vw, 100vw" seed={3} />
+    </div>
+
+    <ol class="esencia__day" role="list" aria-label="El día en Yedra Café">
+      {
+        moments.map((m, i) => (
+          <li class="moment" data-reveal="fade" style={`--i:${i}`}>
+            <span class="moment__dot" aria-hidden="true" />
+            <p class="moment__when">{m.when}</p>
+            <h3 class="moment__what">{m.what}</h3>
+            <p class="moment__text">{m.text}</p>
+            {i === 2 && (
+              <p class="moment__extra">
+                {drinks.value}. <Pending note={drinks.status === 'pendiente' ? drinks.note : undefined} />
+              </p>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .esencia {
+    background: var(--cal);
+  }
+
+  .esencia__grid {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .esencia__title {
+    font-size: var(--step-5);
+    line-height: 1.02;
+    max-width: 14ch;
+  }
+
+  .esencia__copy {
+    display: grid;
+    gap: var(--space-5);
+    max-width: var(--measure);
+  }
+
+  .esencia__copy p:not(.lede) {
+    color: var(--pizarra-2);
+  }
+
+  .esencia__photo {
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  .esencia__photo :global(.frame__caption) {
+    padding-inline: var(--gutter);
+  }
+
+  /* ---------- El día: línea con tres momentos ---------- */
+  .esencia__day {
+    position: relative;
+    display: grid;
+    gap: var(--space-7);
+    padding-left: var(--space-6);
+    margin-top: var(--space-5);
+  }
+
+  .esencia__day::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 1.5px;
+    background: var(--toldo);
+    opacity: 0.25;
+  }
+
+  .moment {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+    max-width: 22rem;
+  }
+
+  .moment__dot {
+    position: absolute;
+    left: calc(var(--space-6) * -1);
+    top: 0.45rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--toldo);
+    box-shadow: 0 0 0 5px var(--cal);
+  }
+
+  .moment__when {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--toldo-2);
+  }
+
+  .moment__what {
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+
+  .moment__text,
+  .moment__extra {
+    color: var(--pizarra-2);
+  }
+
+  .moment__extra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  @media (min-width: 48rem) {
+    .esencia__day {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-6);
+      padding-left: 0;
+      padding-top: var(--space-6);
+    }
+
+    .esencia__day::before {
+      left: 0;
+      right: 0;
+      top: 5px;
+      bottom: auto;
+      width: auto;
+      height: 1.5px;
+    }
+
+    .moment__dot {
+      left: 0;
+      top: calc(var(--space-6) * -1);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .esencia__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-5);
+      row-gap: var(--space-8);
+    }
+
+    .esencia__title {
+      grid-column: 1 / 10;
+    }
+
+    .esencia__copy {
+      grid-column: 2 / 6;
+      grid-row: 2;
+      align-self: start;
+      padding-top: var(--space-6);
+    }
+
+    .esencia__photo {
+      grid-column: 7 / 13;
+      grid-row: 2;
+      margin-inline: 0 calc(var(--gutter) * -1);
+    }
+
+    .esencia__photo :global(.frame__caption) {
+      padding-inline: 0 var(--gutter);
+    }
+
+    .esencia__day {
+      grid-column: 1 / 13;
+    }
+  }
+</style>

@@ -1,0 +1,78 @@
+/*
+ * Yedra Café: tokens de diseño.
+ * Ver docs/DESIGN_SYSTEM.md (paleta, tipografía, espaciado) y docs/ANIMATIONS.md (movimiento).
+ */
+:root {
+  /* Paleta: sacada del local real (toldo, rótulo, suelo de damero, paredes, yedra) */
+  --toldo: #1f4e9f; /* azul del toldo de la fachada: color de marca */
+  --toldo-2: #2d5db0; /* toldo con luz: capas sobre azul */
+  --toldo-osc: #173b78; /* toldo en sombra: titulares sobre ocre */
+  --pizarra: #222a27; /* rótulo y pizarra: texto sobre claro y fondo de la carta */
+  --pizarra-2: #585f5b; /* texto secundario sobre cal (6:1) */
+  --ocre: #e6c88c; /* baldosa ocre del suelo: acento sobre oscuro y fondo de «Visítanos» */
+  --baldosa: #8b9dc9; /* baldosa azul del suelo: solo en el damero */
+  --cal: #f7f5f0; /* pared blanca: papel */
+  --cal-2: #ece8df; /* papel en sombra */
+  --cobre: #c8692e; /* letras «CAFÉ» del rótulo: detalles, nunca texto pequeño */
+  --madera: #b98e62; /* mesas y estanterías */
+  --yedra: #6e9b58; /* la yedra de la pared */
+  --yedra-2: #3f6b3a;
+  --yedra-3: #a6c78a;
+
+  /* Canales RGB para transparencias: rgb(var(--cal-rgb) / 0.8) */
+  --cal-rgb: 247 245 240;
+  --pizarra-rgb: 34 42 39;
+  --toldo-rgb: 31 78 159;
+  --ocre-rgb: 230 200 140;
+
+  /* Tipografía (familias inyectadas por <Font /> de Astro) */
+  --ff-display: var(--font-display), Georgia, serif;
+  --ff-text: var(--font-text), system-ui, sans-serif;
+
+  /* Escala tipográfica (fluida, basada en la escala clásica 14/17/21/24/36/48/60/72) */
+  --step--1: 0.875rem;
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --step-1: clamp(1.1875rem, 1.1rem + 0.4vw, 1.3125rem);
+  --step-2: clamp(1.3125rem, 1.2rem + 0.55vw, 1.5rem);
+  --step-3: clamp(1.75rem, 1.45rem + 1.4vw, 2.25rem);
+  --step-4: clamp(2.25rem, 1.6rem + 3vw, 3.75rem);
+  --step-5: clamp(2.75rem, 1.8rem + 4.6vw, 4.5rem);
+  --step-display: clamp(6.5rem, 2rem + 23vw, 25rem);
+
+  --lh-tight: 0.92;
+  --lh-head: 1.06;
+  --lh-text: 1.55;
+
+  /* Espaciado (escala espaciosa) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --section-y: clamp(5rem, 3rem + 9vw, 11rem);
+  --gutter: clamp(1.25rem, 0.6rem + 3vw, 3.5rem);
+  --max: 90rem;
+  --measure: 34em;
+
+  /* Forma: casi todo recto; el arco solo en el marco del hero. */
+  --radius-s: 2px;
+  --radius-arch: 999px 999px 0 0;
+
+  /* Movimiento: curvas de la skill «animate» (no inventar otras). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-press: 160ms;
+  --dur-ui: 220ms;
+  --dur-panel: 420ms;
+  --dur-reveal: 900ms;
+  --dur-draw: 1800ms;
+  --stagger: 60ms;
+
+  --header-h: 4.5rem;
+}

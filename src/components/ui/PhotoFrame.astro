@@ -1,0 +1,111 @@
+---
+/**
+ * Hueco fotográfico. Con foto real (frame.photo) usa <Picture> optimizado (AVIF/WebP,
+ * srcset). Sin ella, muestra la ilustración de marca y lo indica en el pie.
+ */
+import { Picture } from 'astro:assets';
+import type { Frame } from '../../data/gallery';
+import ArtPanel from '../art/ArtPanel.astro';
+
+interface Props {
+  frame: Frame;
+  /** Proporción ancho/alto, p. ej. "4 / 5". */
+  ratio: string;
+  sizes: string;
+  eager?: boolean;
+  reveal?: boolean;
+  seed?: number;
+  shape?: 'rect' | 'arch';
+  captionTone?: 'light' | 'dark';
+  /** Mostrar «foto pendiente» en el pie. Desactívalo si la sección ya lo avisa una vez. */
+  pendingNote?: boolean;
+  class?: string;
+}
+
+const {
+  frame,
+  ratio,
+  sizes,
+  eager = false,
+  reveal = true,
+  seed,
+  shape = 'rect',
+  captionTone = 'light',
+  pendingNote = true,
+  class: className,
+} = Astro.props;
+---
+
+<figure class:list={['frame', `frame--${shape}`, `frame--caption-${captionTone}`, className]}>
+  <div class="frame__media" style={`aspect-ratio:${ratio}`} data-reveal={reveal ? 'mask' : undefined}>
+    {
+      frame.photo ? (
+        <Picture
+          src={frame.photo.image}
+          alt={frame.photo.alt}
+          formats={['avif', 'webp']}
+          widths={[400, 640, 800, 1200, 1600]}
+          sizes={sizes}
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : 'auto'}
+          class="frame__img"
+          style={frame.photo.position ? `object-position:${frame.photo.position}` : undefined}
+        />
+      ) : (
+        <div class="frame__art">
+          <ArtPanel variant={frame.art} seed={seed} />
+        </div>
+      )
+    }
+  </div>
+  <figcaption class="frame__caption">
+    <span>{frame.caption}</span>
+    {!frame.photo && pendingNote && <span class="frame__note">Ilustración. Foto del local pendiente.</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .frame {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .frame__media {
+    position: relative;
+    overflow: hidden;
+    background: var(--cal-2);
+  }
+
+  .frame--arch .frame__media {
+    border-radius: var(--radius-arch);
+  }
+
+  .frame__art,
+  .frame :global(.frame__img),
+  .frame :global(picture) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .frame :global(.frame__img) {
+    object-fit: cover;
+  }
+
+  .frame__caption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-4);
+    font-size: var(--step--1);
+    line-height: 1.4;
+  }
+
+
+  .frame--caption-light .frame__caption {
+    color: var(--pizarra-2);
+  }
+
+  .frame--caption-dark .frame__caption {
+    color: rgb(var(--cal-rgb) / 0.82);
+  }
+</style>

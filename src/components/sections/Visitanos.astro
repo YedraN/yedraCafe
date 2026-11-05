@@ -1,0 +1,282 @@
+---
+import { business, maps } from '../../data/business';
+import NeighborhoodMap from '../map/NeighborhoodMap.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import Pending from '../ui/Pending.astro';
+import SplitWords from '../ui/SplitWords.astro';
+import type { DayOfWeek } from '../../data/types';
+
+const { address, openDays, hours, phone, transit } = business;
+const a = address.value;
+const instagram = business.social.find((s) => s.id === 'instagram');
+
+const dayNames: Record<DayOfWeek, string> = {
+  Monday: 'lunes',
+  Tuesday: 'martes',
+  Wednesday: 'miércoles',
+  Thursday: 'jueves',
+  Friday: 'viernes',
+  Saturday: 'sábado',
+  Sunday: 'domingo',
+};
+const order: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+// «Lunes a viernes» si los días son consecutivos; si no, la lista.
+const dayRange = (days: readonly DayOfWeek[]) => {
+  const idx = days.map((d) => order.indexOf(d)).sort((x, y) => x - y);
+  const consecutive = idx.every((v, i) => i === 0 || v === idx[i - 1] + 1);
+  const names = idx.map((i) => dayNames[order[i]]);
+  const text = consecutive && names.length > 2 ? `${names[0]} a ${names[names.length - 1]}` : names.join(', ');
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+---
+
+<section class="visit section" id="visitanos" aria-labelledby="visit-title">
+  <div class="wrap visit__grid">
+    <div class="visit__info">
+      <h2 class="visit__title" id="visit-title" data-reveal="words">
+        <SplitWords text="Visítanos en Benicalap" />
+      </h2>
+
+      <address class="visit__address" data-reveal="fade">
+        <span class="visit__name">{business.name}</span>
+        <span>{a.street}</span>
+        <span>{a.postalCode} {a.locality}</span>
+      </address>
+
+      <dl class="visit__facts">
+        <div class="fact" data-reveal="fade" style="--i:1">
+          <dt><Icon name="clock" size={18} /> Horario</dt>
+          <dd>
+            {
+              hours.value ? (
+                <>
+                  <ul class="hours" role="list">
+                    {hours.value.map((h) => (
+                      <li>
+                        <span>{dayRange(h.days)}</span>
+                        <span class="hours__time">
+                          {h.opens}–{h.closes}
+                        </span>
+                      </li>
+                    ))}
+                    <li>
+                      <span>Sábado y domingo</span>
+                      <span class="hours__time">Cerrado</span>
+                    </li>
+                  </ul>
+                  {hours.status === 'pendiente' && <Pending label="Horario de Google Maps, por confirmar" note={hours.note} />}
+                </>
+              ) : (
+                <>
+                  <span>{openDays.value ?? 'Horario'}</span>
+                  <Pending label="Horario por confirmar" note={hours.status === 'pendiente' ? hours.note : undefined} />
+                </>
+              )
+            }
+          </dd>
+        </div>
+
+        <div class="fact" data-reveal="fade" style="--i:2">
+          <dt><Icon name="tram" size={18} /> Cómo llegar</dt>
+          <dd>
+            {transit.value.kind} {transit.value.stop}, a unos {transit.value.distanceM} m.
+          </dd>
+        </div>
+
+        <div class="fact" data-reveal="fade" style="--i:3">
+          <dt><Icon name="instagram" size={18} /> Contacto</dt>
+          <dd>
+            {
+              instagram && (
+                <a href={instagram.url} target="_blank" rel="noopener noreferrer">
+                  {instagram.handle} en Instagram<span class="visually-hidden"> (se abre en una pestaña nueva)</span>
+                </a>
+              )
+            }
+            {
+              phone.status === 'confirmado' ? (
+                <a href={`tel:${phone.value.replace(/\s/g, '')}`}>{phone.value.replace(/^\+34\s*/, '')}</a>
+              ) : (
+                <Pending label="Teléfono por confirmar" note={phone.note} />
+              )
+            }
+          </dd>
+        </div>
+      </dl>
+
+      <div class="visit__ctas" data-reveal="fade" style="--i:4">
+        <Button href={maps.directions} on="light" icon="directions" external>Cómo llegar</Button>
+        <Button href={maps.view} on="light" variant="line" icon="map" external>Abrir en Google Maps</Button>
+      </div>
+    </div>
+
+    <div class="visit__map">
+      <NeighborhoodMap />
+    </div>
+  </div>
+  <div class="visit__damero" aria-hidden="true"></div>
+</section>
+
+<style>
+  .visit {
+    background: var(--ocre);
+    color: var(--pizarra);
+  }
+
+  .visit__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .visit__info {
+    display: grid;
+    gap: var(--space-6);
+    align-content: start;
+  }
+
+  .visit__title {
+    font-size: var(--step-5);
+    line-height: 1;
+    max-width: 10ch;
+    color: var(--toldo-osc);
+  }
+
+  .visit__address {
+    display: grid;
+    font-family: var(--ff-display);
+    font-style: normal;
+    font-size: var(--step-3);
+    line-height: 1.15;
+  }
+
+  .visit__name {
+    font-family: var(--ff-text);
+    font-size: var(--step-0);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--toldo);
+  }
+
+  .visit__facts {
+    display: grid;
+    border-top: 1px solid rgb(var(--pizarra-rgb) / 0.22);
+  }
+
+  .fact {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid rgb(var(--pizarra-rgb) / 0.22);
+  }
+
+  .fact dt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--toldo);
+  }
+
+  .fact dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .fact a {
+    font-weight: 600;
+    text-decoration-thickness: 1.5px;
+  }
+
+  .fact a:hover {
+    text-decoration-thickness: 2.5px;
+  }
+
+  .hours {
+    display: grid;
+    gap: var(--space-1);
+    min-width: 15rem;
+  }
+
+  .hours li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+
+  .hours__time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  /* El damero del suelo del local, como el escalón de la entrada */
+  .visit__damero {
+    --tile: clamp(28px, 3.2vw, 44px);
+    height: calc(var(--tile) * 2);
+    margin-top: var(--section-y);
+    margin-bottom: calc(var(--section-y) * -1);
+    background: conic-gradient(from 45deg, var(--baldosa) 25%, var(--ocre) 0 50%, var(--baldosa) 0 75%, var(--ocre) 0) 0 0 /
+      var(--tile) var(--tile);
+  }
+
+  .visit__ctas {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .visit :global(.map__credit) {
+    color: var(--pizarra);
+  }
+
+  .visit :global(.pending--light) {
+    color: var(--pizarra);
+  }
+
+  @media (min-width: 40rem) {
+    .visit__ctas {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .fact {
+      grid-template-columns: 10rem 1fr;
+      align-items: baseline;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .visit__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-5);
+      align-items: start;
+    }
+
+    .visit__info {
+      grid-column: 1 / 6;
+    }
+
+    .visit__map {
+      grid-column: 6 / 13;
+      margin-right: calc(var(--gutter) * -1);
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-5));
+    }
+
+    .visit__map :global(.map__credit) {
+      padding-right: var(--gutter);
+    }
+
+    .fact {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .fact {
+      grid-template-columns: 9rem 1fr;
+    }
+  }
+</style>

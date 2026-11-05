@@ -1,0 +1,59 @@
+---
+/**
+ * Logotipo provisional: «Yedra» en Gloock con una hoja de yedra como acento.
+ * PENDIENTE: sustituir por el logotipo real si el negocio dispone de uno.
+ */
+import { LEAF_PATH } from '../../lib/vine';
+
+interface Props {
+  size?: 's' | 'l';
+}
+
+const { size = 's' } = Astro.props;
+---
+
+<span class:list={['wordmark', `wordmark--${size}`]} translate="no">
+  <svg class="wordmark__leaf" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <path d={LEAF_PATH} />
+  </svg>
+  <span class="wordmark__name">Yedra</span>
+  <span class="wordmark__sub">café</span>
+</span>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    line-height: 1;
+    color: inherit;
+  }
+
+  .wordmark__leaf {
+    width: 0.95em;
+    height: 0.95em;
+    align-self: center;
+    fill: var(--yedra-3);
+    transform: rotate(-24deg);
+  }
+
+  .wordmark__name {
+    font-family: var(--ff-display);
+    font-size: 1.6rem;
+    letter-spacing: -0.01em;
+  }
+
+  .wordmark__sub {
+    font-family: var(--ff-text);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .wordmark--l .wordmark__name {
+    font-size: 2.4rem;
+  }
+
+  .wordmark--l .wordmark__sub {
+    font-size: 1.2rem;
+  }
+</style>

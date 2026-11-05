@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Pending from '../components/ui/Pending.astro';
+import { business, fullAddress } from '../data/business';
+
+const { legal } = business;
+const title = 'Aviso legal y privacidad | Yedra Café';
+const description = 'Aviso legal, política de privacidad y uso de cookies de la web de Yedra Café, cafetería en Benicalap (València).';
+---
+
+<BaseLayout title={title} description={description} path="/aviso-legal" headerStart="light">
+  <article class="legal wrap">
+    <h1>Aviso legal y privacidad</h1>
+
+    {
+      legal.status === 'pendiente' && (
+        <p class="legal__notice">
+          <Pending label="Datos del titular pendientes" note={legal.note} />
+          <span>
+            Esta página recoge la estructura exigida por la LSSI-CE y el RGPD. Los datos identificativos del titular
+            se completarán cuando Yedra Café los facilite.
+          </span>
+        </p>
+      )
+    }
+
+    <section aria-labelledby="titular">
+      <h2 id="titular">Titular de la web</h2>
+      <dl>
+        <dt>Nombre comercial</dt>
+        <dd>{business.name}</dd>
+        <dt>Titular (persona física o razón social)</dt>
+        <dd><Pending /></dd>
+        <dt>NIF / CIF</dt>
+        <dd><Pending /></dd>
+        <dt>Domicilio del establecimiento</dt>
+        <dd>{fullAddress()}</dd>
+        <dt>Contacto</dt>
+        <dd><Pending /></dd>
+      </dl>
+    </section>
+
+    <section aria-labelledby="uso">
+      <h2 id="uso">Uso de la web</h2>
+      <p>
+        Esta web informa sobre la cafetería Yedra Café: ubicación, servicios y carta. La información de carta y
+        horarios puede cambiar; ante cualquier duda, consulta directamente en el local.
+      </p>
+    </section>
+
+    <section aria-labelledby="privacidad">
+      <h2 id="privacidad">Privacidad</h2>
+      <p>
+        La web no tiene formularios ni recoge datos personales. Si contactas con Yedra Café por redes sociales, se
+        aplican también las políticas de privacidad de esas plataformas.
+      </p>
+    </section>
+
+    <section aria-labelledby="cookies">
+      <h2 id="cookies">Cookies</h2>
+      <p>
+        La web no instala cookies propias ni de terceros, ni usa herramientas de analítica. Los enlaces a Google Maps,
+        Instagram o Facebook llevan a servicios externos con sus propias políticas.
+      </p>
+    </section>
+
+    <section aria-labelledby="mapa">
+      <h2 id="mapa">Créditos</h2>
+      <p>
+        Mapa elaborado con datos de{' '}
+        <a href="https://www.openstreetmap.org/copyright">© colaboradores de OpenStreetMap</a>, disponibles bajo
+        licencia ODbL. Fotografías: Yedra Café, publicadas por el negocio en su ficha de Google Maps. Iconos basados
+        en Lucide (licencia ISC).
+      </p>
+    </section>
+
+    <p><a href="/">Volver al inicio</a></p>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    display: grid;
+    gap: var(--space-7);
+    max-width: 48rem;
+    padding-top: calc(var(--header-h) + var(--space-9));
+    padding-bottom: var(--section-y);
+  }
+
+  h1 {
+    font-size: var(--step-5);
+    line-height: 1;
+    color: var(--toldo);
+  }
+
+  h2 {
+    font-size: var(--step-3);
+    margin-bottom: var(--space-3);
+  }
+
+  section p {
+    max-width: var(--measure);
+    color: var(--pizarra-2);
+  }
+
+  .legal__notice {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+    padding: var(--space-5);
+    border: 1px dashed var(--pizarra-2);
+    color: var(--pizarra-2);
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1) var(--space-5);
+  }
+
+  dt {
+    font-weight: 600;
+    margin-top: var(--space-3);
+  }
+
+  @media (min-width: 40rem) {
+    dl {
+      grid-template-columns: 16rem 1fr;
+    }
+
+    dt {
+      margin-top: 0;
+    }
+
+    dt,
+    dd {
+      padding-block: var(--space-2);
+      border-bottom: 1px solid var(--cal-2);
+    }
+  }
+</style>

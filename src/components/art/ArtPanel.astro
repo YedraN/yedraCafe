@@ -1,0 +1,154 @@
+---
+/**
+ * Ilustraciones de marca para los huecos fotográficos sin foto real.
+ * Son arte de la identidad (no simulan el local): taza vista desde arriba con «latte art»
+ * de hoja de yedra, patrón de hojas, baldosa hidráulica, vaso de vermut, rótulo de barra
+ * y granos de café.
+ * Se recortan con `slice` para llenar cualquier proporción de marco.
+ */
+import type { ArtVariant } from '../../data/types';
+import { LEAF_PATH, LEAF_VEINS } from '../../lib/vine';
+
+interface Props {
+  variant: ArtVariant;
+  /** Semilla para variar el patrón de hojas entre marcos. */
+  seed?: number;
+}
+
+const { variant, seed = 1 } = Astro.props;
+
+// Patrón de hojas determinista
+let s = seed * 9301 + 49297;
+const rand = () => {
+  s = (s * 9301 + 49297) % 233280;
+  return s / 233280;
+};
+const leaves = Array.from({ length: 26 }, (_, i) => ({
+  x: (i % 5) * 90 + rand() * 50 - 10,
+  y: Math.floor(i / 5) * 100 + rand() * 50 - 20,
+  r: Math.round(rand() * 360),
+  s: 0.7 + rand() * 0.6,
+  tone: i % 3,
+}));
+const beans = Array.from({ length: 30 }, (_, i) => ({
+  x: (i % 5) * 88 + 24 + rand() * 30,
+  y: Math.floor(i / 5) * 90 + 20 + rand() * 30,
+  r: Math.round(rand() * 180),
+  tone: i % 2,
+}));
+const uid = `${variant}-${seed}`;
+---
+
+<svg class="art" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  {
+    variant === 'taza' && (
+      <>
+        <rect width="400" height="500" fill="var(--cobre)" />
+        <circle cx="190" cy="250" r="150" fill="var(--cal)" />
+        <circle cx="190" cy="250" r="150" fill="none" stroke="rgb(var(--pizarra-rgb) / 0.12)" stroke-width="2" />
+        <circle cx="190" cy="250" r="122" fill="none" stroke="rgb(var(--pizarra-rgb) / 0.08)" stroke-width="2" />
+        <rect x="282" y="232" width="78" height="36" rx="18" fill="var(--cal)" stroke="rgb(var(--pizarra-rgb) / 0.14)" stroke-width="2" />
+        <circle cx="190" cy="250" r="104" fill="var(--cal)" stroke="rgb(var(--pizarra-rgb) / 0.16)" stroke-width="2" />
+        <defs>
+          <radialGradient id={`crema-${uid}`} cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0.55" stop-color="#7a5232" />
+            <stop offset="0.9" stop-color="#5a3a22" />
+            <stop offset="1" stop-color="var(--pizarra)" />
+          </radialGradient>
+        </defs>
+        <circle cx="190" cy="250" r="88" fill={`url(#crema-${uid})`} />
+        <g transform="translate(190 262) rotate(-8) scale(1.05) translate(-50 -60)" fill="var(--cal)" opacity="0.92">
+          <path d={LEAF_PATH} />
+        </g>
+        <g transform="translate(190 262) rotate(-8) scale(1.05) translate(-50 -60)" fill="none" stroke="#7a5232" stroke-width="2.4" stroke-linecap="round" opacity="0.7">
+          <path d={LEAF_VEINS} />
+        </g>
+      </>
+    )
+  }
+  {
+    variant === 'hojas' && (
+      <>
+        <rect width="400" height="500" fill="var(--pizarra)" />
+        {leaves.map((l) => (
+          <g transform={`translate(${l.x} ${l.y}) rotate(${l.r}) scale(${l.s})`}>
+            <path d={LEAF_PATH} fill={['var(--yedra-2)', 'var(--yedra-3)', 'var(--yedra)'][l.tone]} />
+            <path d={LEAF_VEINS} fill="none" stroke="rgb(var(--pizarra-rgb) / 0.3)" stroke-width="1.6" />
+          </g>
+        ))}
+      </>
+    )
+  }
+  {
+    variant === 'azulejo' && (
+      <>
+        <defs>
+          <pattern id={`tile-${uid}`} width="100" height="100" patternUnits="userSpaceOnUse">
+            <rect width="100" height="100" fill="var(--cal)" />
+            <path d="M50 8C62 30 70 38 92 50C70 62 62 70 50 92C38 70 30 62 8 50C30 38 38 30 50 8Z" fill="var(--toldo)" />
+            <circle cx="50" cy="50" r="9" fill="var(--cobre)" />
+            <path d="M0 0h14L0 14ZM100 0H86l14 14ZM0 100v-14l14 14ZM100 100H86l14-14Z" fill="var(--cobre)" />
+            <rect width="100" height="100" fill="none" stroke="rgb(var(--pizarra-rgb) / 0.18)" stroke-width="1" />
+          </pattern>
+        </defs>
+        <rect width="400" height="500" fill={`url(#tile-${uid})`} />
+      </>
+    )
+  }
+  {
+    variant === 'vaso' && (
+      <>
+        <rect width="400" height="500" fill="var(--toldo)" />
+        <ellipse cx="200" cy="420" rx="120" ry="16" fill="rgb(0 0 0 / 0.18)" />
+        <path d="M120 150h160l-14 262a12 12 0 0 1-12 11H146a12 12 0 0 1-12-11Z" fill="rgb(var(--cal-rgb) / 0.1)" stroke="var(--cal)" stroke-width="3" />
+        <path d="M127 250h146l-8 160a8 8 0 0 1-8 7H143a8 8 0 0 1-8-7Z" fill="var(--cobre)" />
+        <rect x="150" y="228" width="44" height="44" rx="6" transform="rotate(-12 172 250)" fill="rgb(var(--cal-rgb) / 0.55)" />
+        <rect x="200" y="238" width="40" height="40" rx="6" transform="rotate(14 220 258)" fill="rgb(var(--cal-rgb) / 0.45)" />
+        <path d="M232 110 182 330" stroke="var(--cal)" stroke-width="3" stroke-linecap="round" />
+        <ellipse cx="226" cy="138" rx="15" ry="20" transform="rotate(20 226 138)" fill="var(--ocre)" />
+        <ellipse cx="214" cy="186" rx="15" ry="20" transform="rotate(20 214 186)" fill="var(--yedra)" />
+        <circle cx="300" cy="150" r="46" fill="#e0893f" />
+        <circle cx="300" cy="150" r="38" fill="#f0b46a" />
+        <path d="M300 112v76M262 150h76M273 123l54 54M327 123l-54 54" stroke="#e0893f" stroke-width="2.5" />
+      </>
+    )
+  }
+  {
+    variant === 'barra' && (
+      <>
+        <rect width="400" height="500" fill="var(--pizarra)" />
+        {/* Todo el contenido dentro de la franja y 120–380 para sobrevivir al recorte 3:2. */}
+        <text x="-14" y="292" fill="var(--cobre)" font-family="var(--ff-display)" font-size="240" letter-spacing="-8">
+          café
+        </text>
+        <path d="M0 318H400" stroke="rgb(var(--ocre-rgb) / 0.35)" stroke-width="2" />
+        <text x="24" y="350" fill="var(--cal)" font-family="var(--ff-text)" font-size="20" font-weight="500">
+          José Grollo, 45
+        </text>
+        <text x="24" y="374" fill="rgb(var(--cal-rgb) / 0.7)" font-family="var(--ff-text)" font-size="20">
+          Benicalap
+        </text>
+      </>
+    )
+  }
+  {
+    variant === 'granos' && (
+      <>
+        <rect width="400" height="500" fill="var(--cobre)" />
+        {beans.map((b) => (
+          <g transform={`translate(${b.x} ${b.y}) rotate(${b.r})`}>
+            <ellipse rx="26" ry="36" fill={b.tone ? 'var(--pizarra)' : '#5a3a22'} />
+            <path d="M0 -32C-12 -12 12 12 0 32" fill="none" stroke="var(--cobre)" stroke-width="4" stroke-linecap="round" opacity="0.55" />
+          </g>
+        ))}
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .art {
+    width: 100%;
+    height: 100%;
+  }
+</style>

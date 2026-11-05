@@ -1,0 +1,108 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'class'> {
+  href: string;
+  variant?: 'solid' | 'line';
+  /** Tono de la superficie sobre la que va el botón. */
+  on?: 'dark' | 'light';
+  icon?: IconName;
+  external?: boolean;
+  class?: string;
+}
+
+const { href, variant = 'solid', on = 'dark', icon, external = false, class: className, ...rest } = Astro.props;
+const externalAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+<a href={href} class:list={['btn', `btn--${variant}`, `btn--on-${on}`, className]} {...externalAttrs} {...rest}>
+  <span class="btn__fill" aria-hidden="true"></span>
+  <span class="btn__label"><slot /></span>
+  {icon && <Icon name={icon} size={18} />}
+  {external && <span class="visually-hidden"> (se abre en una pestaña nueva)</span>}
+</a>
+
+<style>
+  .btn {
+    --btn-fg: var(--pizarra);
+    --btn-bg: var(--ocre);
+    --btn-fill: var(--cal);
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    min-height: 3.25rem;
+    padding: 0.85rem 1.5rem;
+    border: 1.5px solid var(--btn-bg);
+    border-radius: var(--radius-s);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-weight: 600;
+    font-size: var(--step-0);
+    line-height: 1.2;
+    text-decoration: none;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform var(--dur-press) var(--ease-out),
+      color var(--dur-ui) ease,
+      border-color var(--dur-ui) ease;
+  }
+
+  .btn--on-light {
+    --btn-fg: var(--cal);
+    --btn-bg: var(--toldo);
+    --btn-fill: var(--pizarra);
+  }
+
+  .btn--line {
+    background: transparent;
+    color: var(--btn-bg);
+  }
+
+  /* Relleno que sube desde abajo al pasar el ratón */
+  .btn__fill {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--btn-fill);
+    transform: translateY(101%);
+    transition: transform var(--dur-ui) var(--ease-out);
+  }
+
+  .btn--line .btn__fill {
+    background: var(--btn-bg);
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover .btn__fill {
+      transform: translateY(0);
+    }
+
+    .btn--line:hover {
+      color: var(--btn-fg);
+    }
+
+    .btn--solid:hover {
+      border-color: var(--btn-fill);
+    }
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--btn-bg);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn__fill {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,184 @@
+---
+import { business, maps } from '../../data/business';
+import { nav } from '../../data/site';
+import IvyVine from '../art/IvyVine.astro';
+import Icon from '../ui/Icon.astro';
+
+const a = business.address.value;
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__vine">
+  <IvyVine
+    animate="view"
+    viewBox="0 0 1440 220"
+    preserveAspectRatio="xMidYMin slice"
+    start={[-40, 30]}
+    segments={[
+      [[180, 90], [320, -10], [520, 50]],
+      [[700, 105], [820, 10], [1000, 60]],
+      [[1160, 105], [1300, 20], [1480, 70]],
+    ]}
+    leafCount={30}
+    leafSize={64}
+    seed={23}
+  />
+  </div>
+
+  <div class="wrap footer__grid">
+    <p class="footer__claim">Nos vemos en José Grollo.</p>
+
+    <nav class="footer__col" aria-label="Pie de página">
+      <h2 class="footer__heading">Navegación</h2>
+      <ul role="list">
+        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="footer__col">
+      <h2 class="footer__heading">Dónde</h2>
+      <address>
+        {a.street}<br />{a.postalCode} {a.district}, {a.locality}
+      </address>
+      <a class="footer__inline" href={maps.directions} target="_blank" rel="noopener noreferrer">
+        <Icon name="directions" size={16} /> Cómo llegar<span class="visually-hidden"> (se abre en una pestaña nueva)</span>
+      </a>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__heading">Síguenos</h2>
+      <ul role="list">
+        {
+          business.social.map((s) => (
+            <li>
+              <a class="footer__inline" href={s.url} target="_blank" rel="noopener noreferrer">
+                <Icon name={s.id} size={16} /> {s.label}
+                <span class="visually-hidden"> (se abre en una pestaña nueva)</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__mark" aria-hidden="true" translate="no" data-reveal="words">
+    <span class="split-word"><span>Yedra</span></span>
+  </div>
+
+  <div class="wrap footer__legal">
+    <p>© {year} {business.name}. {a.district}, {a.locality}.</p>
+    <a href="/aviso-legal">Aviso legal y privacidad</a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    background: var(--toldo);
+    color: var(--cal);
+    overflow: clip;
+  }
+
+  .footer__vine {
+    display: block;
+    width: 100%;
+    height: clamp(110px, 13vw, 200px);
+    margin-top: -2px;
+    --vine-width: 2.5;
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: var(--space-7);
+    padding-top: var(--space-6);
+  }
+
+  .footer__claim {
+    font-family: var(--ff-display);
+    font-size: var(--step-4);
+    line-height: 1.05;
+    max-width: 12ch;
+  }
+
+  .footer__col {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+
+  .footer__heading {
+    font-family: var(--ff-text);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ocre);
+    letter-spacing: 0;
+  }
+
+  .footer__col ul {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .footer__col address {
+    font-style: normal;
+  }
+
+  .footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 85% / 0 1px;
+    transition: background-size var(--dur-ui) var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer a {
+      transition: none;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .footer a:hover {
+      background-size: 100% 1px;
+    }
+  }
+
+  .footer__mark {
+    margin-top: var(--space-8);
+    font-family: var(--ff-display);
+    font-size: 34vw;
+    line-height: 0.86;
+    letter-spacing: -0.04em;
+    text-align: center;
+    color: var(--toldo-2);
+    user-select: none;
+  }
+
+  .footer__mark .split-word {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-5) max(var(--space-5), env(safe-area-inset-bottom));
+    border-top: 1px solid rgb(var(--cal-rgb) / 0.16);
+    font-size: var(--step--1);
+    color: rgb(var(--cal-rgb) / 0.82);
+  }
+
+  @media (min-width: 48rem) {
+    .footer__grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      column-gap: var(--space-6);
+    }
+  }
+</style>

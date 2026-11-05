@@ -1,0 +1,421 @@
+---
+import { business } from '../../data/business';
+import { menu, menuIsProvisional } from '../../data/menu';
+import Button from '../ui/Button.astro';
+import Pending from '../ui/Pending.astro';
+import SplitWords from '../ui/SplitWords.astro';
+
+const instagram = business.social.find((s) => s.id === 'instagram');
+const price = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
+---
+
+<section class="carta section" id="carta" aria-labelledby="carta-title">
+  <div class="wrap carta__grid">
+    <div class="carta__aside">
+      <h2 class="carta__title" id="carta-title" data-reveal="words">
+        <SplitWords text="Nuestra carta" />
+      </h2>
+      {
+        menuIsProvisional && (
+          <p class="carta__notice" data-reveal="fade">
+            <Pending tone="dark" label="Carta provisional" />
+            <span>
+              Los platos son ejemplos de estructura. La carta real y sus precios están pendientes de confirmar con
+              Yedra Café.
+            </span>
+          </p>
+        )
+      }
+
+      <div class="carta__tabs" role="tablist" aria-label="Categorías de la carta" data-tablist>
+        {
+          menu.map((cat, i) => (
+            <button
+              class="carta__tab"
+              type="button"
+              role="tab"
+              id={`tab-${cat.id}`}
+              aria-controls={`panel-${cat.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              data-tab
+            >
+              {cat.label}
+            </button>
+          ))
+        }
+        <span class="carta__indicator" aria-hidden="true" data-indicator></span>
+      </div>
+    </div>
+
+    <div class="carta__panels">
+      {
+        menu.map((cat, i) => (
+          <div
+            class="panel"
+            role="tabpanel"
+            id={`panel-${cat.id}`}
+            aria-labelledby={`tab-${cat.id}`}
+            tabindex="0"
+            data-panel
+            data-active={i === 0 ? '' : undefined}
+          >
+            <header class="panel__head" data-stagger>
+              <p class="panel__moment">{cat.moment}</p>
+              <h3 class="panel__title">{cat.label}</h3>
+              <p class="panel__intro">{cat.intro}</p>
+            </header>
+            <ul class="dishes" role="list">
+              {cat.items.map((item) => (
+                <li class="dish" data-stagger data-provisional={item.provisional ? '' : undefined}>
+                  <div class="dish__head">
+                    <h4 class="dish__name">{item.name}</h4>
+                    {item.price !== undefined && (
+                      <>
+                        <span class="dish__leader" aria-hidden="true" />
+                        <span class="dish__price">{price.format(item.price)}</span>
+                      </>
+                    )}
+                  </div>
+                  {item.description && <p class="dish__desc">{item.description}</p>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+
+      {
+        instagram && (
+          <div class="carta__cta">
+            <p>¿Buscas algo concreto? Pregunta por la carta del día.</p>
+            <Button href={instagram.url} variant="line" icon="instagram" external>
+              Escribir por Instagram
+            </Button>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const tablist = document.querySelector<HTMLElement>('[data-tablist]');
+  if (tablist) {
+    const tabs = [...tablist.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls') ?? ''));
+    const indicator = tablist.querySelector<HTMLElement>('[data-indicator]');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let running: Animation[] = [];
+
+    const placeIndicator = (tab: HTMLElement, animate: boolean) => {
+      if (!indicator) return;
+      indicator.style.transition = animate ? '' : 'none';
+      const x = tab.offsetLeft;
+      const y = tab.offsetTop + tab.offsetHeight;
+      indicator.style.transform = `translate(${x}px, ${y}px) scaleX(${tab.offsetWidth})`;
+    };
+
+    const enter = (panel: HTMLElement) => {
+      running.forEach((a) => a.cancel());
+      running = [];
+      const items = panel.querySelectorAll<HTMLElement>('[data-stagger]');
+      items.forEach((el, i) => {
+        const frames = reduce.matches
+          ? [{ opacity: 0 }, { opacity: 1 }]
+          : [
+              { opacity: 0, transform: 'translateY(14px)' },
+              { opacity: 1, transform: 'none' },
+            ];
+        running.push(
+          el.animate(frames, {
+            duration: reduce.matches ? 200 : 420,
+            delay: reduce.matches ? 0 : i * 45,
+            easing: 'cubic-bezier(0.23, 1, 0.32, 1)', // = --ease-out (tokens.css)
+            fill: 'backwards',
+          }),
+        );
+      });
+    };
+
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const active = i === index;
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+        panels[i]?.toggleAttribute('data-active', active);
+      });
+      const tab = tabs[index];
+      if (focus) tab.focus();
+      // En móvil las pestañas hacen scroll horizontal: mantener visible la activa.
+      tab.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduce.matches ? 'auto' : 'smooth' });
+      placeIndicator(tab, true);
+      const panel = panels[index];
+      if (panel) enter(panel);
+    };
+
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
+
+    tablist.addEventListener('keydown', (e) => {
+      const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+      const keys: Record<string, number> = {
+        ArrowRight: current + 1,
+        ArrowDown: current + 1,
+        ArrowLeft: current - 1,
+        ArrowUp: current - 1,
+        Home: 0,
+        End: tabs.length - 1,
+      };
+      if (!(e.key in keys)) return;
+      e.preventDefault();
+      select((keys[e.key] + tabs.length) % tabs.length, true);
+    });
+
+    const syncIndicator = () => {
+      const active = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+      if (active) placeIndicator(active, false);
+    };
+    new ResizeObserver(syncIndicator).observe(tablist);
+    document.fonts?.ready.then(syncIndicator);
+    tablist.setAttribute('data-ready', '');
+  }
+</script>
+
+<style>
+  .carta {
+    background: var(--pizarra);
+    color: var(--cal);
+  }
+
+  .carta__grid {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .carta__aside {
+    display: grid;
+    gap: var(--space-6);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .carta__title {
+    font-size: var(--step-5);
+    line-height: 1;
+  }
+
+  .carta__notice {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+    max-width: 30rem;
+    font-size: var(--step--1);
+    color: rgb(var(--cal-rgb) / 0.8);
+  }
+
+  /* ---------- Pestañas ---------- */
+  .carta__tabs {
+    position: relative;
+    display: flex;
+    gap: var(--space-2);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    padding-bottom: var(--space-3);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    border-bottom: 1px solid rgb(var(--cal-rgb) / 0.16);
+  }
+
+  .carta__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carta__tab {
+    flex: none;
+    min-height: 48px;
+    padding: var(--space-2) var(--space-3);
+    border: 0;
+    background: none;
+    color: rgb(var(--cal-rgb) / 0.62);
+    font-family: var(--ff-display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+    scroll-snap-align: start;
+    transition: color var(--dur-ui) ease;
+  }
+
+  .carta__tab[aria-selected='true'] {
+    color: var(--ocre);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .carta__tab:hover {
+      color: var(--cal);
+    }
+
+    .carta__tab[aria-selected='true']:hover {
+      color: var(--ocre);
+    }
+  }
+
+  .carta__tab:focus-visible {
+    outline: 2px solid var(--ocre);
+    outline-offset: -2px;
+  }
+
+  .carta__indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 2px;
+    background: var(--ocre);
+    transform-origin: left;
+    opacity: 0;
+    transition: transform 250ms var(--ease-in-out);
+    pointer-events: none;
+  }
+
+  .carta__tabs[data-ready] .carta__indicator {
+    opacity: 1;
+  }
+
+  /* ---------- Paneles ---------- */
+  :global(.js) .panel:not([data-active]) {
+    display: none;
+  }
+
+  .panel {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-2);
+  }
+
+  .panel + .panel {
+    margin-top: var(--space-8);
+  }
+
+  :global(.js) .panel + .panel {
+    margin-top: 0;
+  }
+
+  .panel:focus-visible {
+    outline: 2px solid var(--ocre);
+    outline-offset: 8px;
+  }
+
+  .panel__head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .panel__moment {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ocre);
+  }
+
+  .panel__title {
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+
+  .panel__intro {
+    max-width: 32rem;
+    color: rgb(var(--cal-rgb) / 0.8);
+  }
+
+  .dishes {
+    display: grid;
+    border-top: 1px solid rgb(var(--cal-rgb) / 0.16);
+  }
+
+  .dish {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-5);
+    border-bottom: 1px solid rgb(var(--cal-rgb) / 0.16);
+  }
+
+  .dish__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .dish__name {
+    font-family: var(--ff-display);
+    font-weight: 400;
+    font-size: var(--step-2);
+    line-height: 1.15;
+  }
+
+  .dish__leader {
+    flex: 1;
+    min-width: var(--space-5);
+    border-bottom: 1.5px dotted rgb(var(--cal-rgb) / 0.35);
+    transform: translateY(-0.3em);
+  }
+
+  .dish__price {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--ocre);
+  }
+
+  .dish__desc {
+    color: rgb(var(--cal-rgb) / 0.78);
+    max-width: 34rem;
+  }
+
+  .dish[data-provisional] .dish__name {
+    text-decoration: underline dashed rgb(var(--cal-rgb) / 0.3);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+
+  .carta__cta {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    margin-top: var(--space-8);
+    color: rgb(var(--cal-rgb) / 0.85);
+  }
+
+  /* ---------- Escritorio: índice lateral fijo + carta ---------- */
+  @media (min-width: 64rem) {
+    .carta__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-5);
+    }
+
+    .carta__aside {
+      grid-column: 1 / 6;
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-6));
+      align-self: start;
+    }
+
+    .carta__panels {
+      grid-column: 7 / 13;
+      padding-top: var(--space-3);
+    }
+
+    .carta__tabs {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow: visible;
+      border-bottom: 0;
+    }
+
+    .carta__tab {
+      padding-inline: 0;
+      font-size: var(--step-4);
+      line-height: 1.12;
+    }
+  }
+</style>

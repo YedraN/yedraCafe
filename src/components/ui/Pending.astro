@@ -1,0 +1,45 @@
+---
+/**
+ * Marca visible para un dato sin verificar. Nunca presenta el dato como real:
+ * dice qué falta. `note` va en el title para quien revise la web con el cliente.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  label?: string;
+  note?: string;
+  tone?: 'dark' | 'light';
+}
+
+const { label = 'Pendiente de confirmar', note, tone = 'light' } = Astro.props;
+---
+
+<span class:list={['pending', `pending--${tone}`]} title={note}>
+  <Icon name="pending" size={14} />
+  <span>{label}</span>
+</span>
+
+<style>
+  .pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.2em 0.6em;
+    border: 1px dashed currentColor;
+    border-radius: var(--radius-s);
+    font-family: var(--ff-text);
+    font-size: var(--step--1);
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .pending--light {
+    color: var(--pizarra-2);
+  }
+
+  .pending--dark {
+    color: var(--ocre);
+  }
+</style>
