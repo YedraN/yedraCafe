@@ -92,11 +92,11 @@ export const business: Business & {
     sources: [SOURCES.cliente],
   },
 
-  /** Lo que sirve, según Facebook e InTravel. */
+  /** Lo que sirve. El cliente confirma que no sirve platos de comida, solo bocadillos a mediodía. */
   services: {
     status: 'confirmado',
-    value: ['Desayunos', 'Almuerzos y comidas', 'Para tomar aquí o para llevar'],
-    sources: [SOURCES.facebook, SOURCES.intravel],
+    value: ['Desayunos', 'Almuerzos', 'Bocadillos a mediodía', 'Para tomar aquí o para llevar'],
+    sources: [SOURCES.cliente],
   },
 
   drinks: {

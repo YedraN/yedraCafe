@@ -12,7 +12,7 @@ Revisado con la skill `seo-audit` (técnico, on-page y local). Las posiciones en
 | Elemento | Valor |
 |---|---|
 | `<title>` (55 caracteres) | Yedra Café \| Cafetería de barrio en Benicalap, València |
-| Meta description (150 caracteres) | Yedra Café es una cafetería de barrio en la C/ de José Grollo 45, Benicalap (València). Desayunos, almuerzos y comidas, para tomar aquí o para llevar. |
+| Meta description (150 caracteres) | Yedra Café es una cafetería de barrio en la C/ de José Grollo 45, Benicalap (València). Desayunos, almuerzos y bocadillos, para tomar aquí o para llevar. |
 | `<h1>` (texto extraído) | «Yedra café, cafetería en Benicalap, València» |
 | `<h2>` | Nuestra esencia, Nuestra carta, Una experiencia para disfrutar, Visítanos en Benicalap |
 | Idioma | `lang="es-ES"`, `og:locale es_ES` y `geo.region ES-V` |

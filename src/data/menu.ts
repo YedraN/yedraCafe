@@ -2,8 +2,8 @@
  * Carta de Yedra Café.
  *
  * ESTADO: PROVISIONAL. No existe una carta pública verificable.
- * Las categorías parten de lo que el negocio dice servir (desayunos, almuerzos y comidas,
- * vermut y cerveza). Los platos marcados `provisional: true` son ejemplos de estructura
+ * Las categorías parten de lo que el negocio dice servir (desayunos, almuerzos, bocadillos a
+ * mediodía, vermut y cerveza; no sirve platos de comida). Los platos marcados `provisional: true` son ejemplos de estructura
  * y se muestran con un aviso visible. Algunos se basan en lo que aparece en las fotos que el
  * negocio publicó en Google Maps (tostada con tomate, café con leche, croissants, cookies, crep),
  * pero siguen sin estar confirmados como carta actual. Sustitúyelos por la carta real y elimina el flag.
@@ -80,8 +80,13 @@ export const menu: readonly MenuCategory[] = [
     id: "mediodia",
     label: "Mediodía",
     moment: "Al mediodía",
-    intro: "Un vermut o una cerveza bien fría.",
+    intro: "Un bocadillo, un vermut o una cerveza bien fría.",
     items: [
+      {
+        name: "Bocadillos",
+        description: "No servimos platos de comida, pero a mediodía puedes pedirte un bocadillo.",
+        provisional: true,
+      },
       { name: "Vermut", provisional: true },
       { name: "Cerveza fría", provisional: true },
     ],
