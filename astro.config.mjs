@@ -1,10 +1,8 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
 
-// URL pública de producción. El dominio definitivo está PENDIENTE (ver docs/RESEARCH.md):
-// yedracafe.com aparece en un directorio pero no resuelve en DNS.
-// Defínelo con la variable de entorno SITE_URL al desplegar.
-const SITE_URL = process.env.SITE_URL ?? 'https://yedracafe.example';
+// URL pública de producción. Se puede sobrescribir con la variable de entorno SITE_URL.
+const SITE_URL = process.env.SITE_URL ?? 'https://yedracafe.es';
 
 // https://docs.astro.build/en/reference/configuration-reference/
 export default defineConfig({
