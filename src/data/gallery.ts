@@ -50,17 +50,25 @@ export const esenciaFrame: Frame = {
   },
 };
 
+const fachadaPhoto: Photo = {
+  image: fachada,
+  alt: 'Fachada de Yedra Café con el rótulo oscuro, el toldo azul con el nombre y el damero a la entrada',
+  credit,
+  position: '50% 38%',
+};
+
+const bolleriaPhoto: Photo = {
+  image: bolleria,
+  alt: 'Bandeja de bollería con cookies y hojaldres azucarados',
+  credit,
+};
+
 export const experienceFrames: readonly Frame[] = [
   {
     id: 'fachada',
     caption: 'El toldo azul de José Grollo, 45',
     art: 'azulejo',
-    photo: {
-      image: fachada,
-      alt: 'Fachada de Yedra Café con el rótulo oscuro, el toldo azul con el nombre y el damero a la entrada',
-      credit,
-      position: '50% 38%',
-    },
+    photo: fachadaPhoto,
   },
   {
     id: 'espresso',
@@ -72,7 +80,7 @@ export const experienceFrames: readonly Frame[] = [
     id: 'bolleria',
     caption: 'Bollería',
     art: 'granos',
-    photo: { image: bolleria, alt: 'Bandeja de bollería con cookies y hojaldres azucarados', credit },
+    photo: bolleriaPhoto,
   },
   {
     id: 'tostada',
@@ -92,3 +100,15 @@ export const experienceFrames: readonly Frame[] = [
     photo: { image: crep, alt: 'Crep con chocolate y nata en plato blanco sobre mesa de madera', credit, position: '50% 60%' },
   },
 ];
+
+/**
+ * Fotos para los datos estructurados (`image` de schema.org): fachada, comedor, barra y producto.
+ * Google recomienda varias imágenes de alta resolución con proporciones distintas
+ * (aquí hay vertical, 4:3 y 1:1). Si se cambia una foto de la web, cambia también aquí.
+ */
+export const schemaPhotos: readonly Photo[] = [
+  fachadaPhoto,
+  heroFrame.photo,
+  esenciaFrame.photo,
+  bolleriaPhoto,
+].filter((p): p is Photo => p !== undefined);

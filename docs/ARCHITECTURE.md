@@ -86,7 +86,7 @@ pnpm verify   # los tres en orden
 Es un sitio estático (`dist/`), apto para cualquier CDN (Netlify, Vercel, Cloudflare Pages o GitHub Pages).
 
 - **Obligatorio**: definir `SITE_URL` con el dominio final. Si no, canonical, sitemap y Open Graph usan el marcador `https://yedracafe.example`.
-- `build.format: 'file'` genera `/aviso-legal.html`. Los hosts habituales sirven `/aviso-legal` sin extensión; compruébalo en el elegido.
+- `build.format: 'file'` genera `/aviso-legal.html`. Vercel no sirve `/aviso-legal` sin extensión por defecto (daba 404), así que `vercel.json` activa `cleanUrls`: sirve las rutas sin `.html` y redirige con 308 las que la llevan. En otro host, comprueba que `/aviso-legal` responde 200.
 - `404.html` se genera para hosts que lo usan automáticamente.
 
 ### Modo mantenimiento

@@ -30,7 +30,7 @@ const {
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
 const canonical = new URL(path, siteUrl);
 const ogImage = new URL(site.ogImage, siteUrl);
-const jsonLd = JSON.stringify(pageGraph(siteUrl, { url: canonical, title, description }));
+const jsonLd = JSON.stringify(await pageGraph(siteUrl, { url: canonical, title, description }));
 ---
 
 <!doctype html>

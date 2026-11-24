@@ -24,6 +24,7 @@ interface Business {
   openDays: Verified<string>;
   hours: Verified<readonly OpeningHours[]>;
   services: Verified<readonly string[]>;
+  cuisine: Verified<readonly string[]>;
   drinks: Verified<string>;
   transit: Verified<{ stop: string; kind: string; distanceM: number }>;
   social: readonly SocialProfile[];
@@ -99,6 +100,13 @@ export const business: Business & {
     sources: [SOURCES.cliente],
   },
 
+  /** Tipo de cocina para schema.org (`servesCuisine`). Sale de los servicios confirmados por el cliente. */
+  cuisine: {
+    status: 'confirmado',
+    value: ['Café', 'Desayunos', 'Almuerzos', 'Bocadillos'],
+    sources: [SOURCES.cliente],
+  },
+
   drinks: {
     status: 'pendiente',
     value: 'Vermut y cerveza fría',
@@ -144,6 +152,11 @@ const mapsQuery = encodeURIComponent(`${business.name}, ${fullAddress()}`);
 export const maps = {
   /** Abre la búsqueda en Google Maps (no depende de un ID de ficha sin verificar). */
   view: `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`,
+  /**
+   * Ficha de Google Maps por su CID (0x68c2f450ac6ebb06 en hexadecimal), comprobada el 24/11/2026:
+   * es la ficha «Yedra cafe» de C/ de José Grollo 45. Se usa en el JSON-LD (`hasMap`).
+   */
+  place: 'https://www.google.com/maps?cid=7548864552753871622',
   directions: `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`,
   osm: `https://www.openstreetmap.org/?mlat=${business.geo.value.latitude}&mlon=${business.geo.value.longitude}#map=18/${business.geo.value.latitude}/${business.geo.value.longitude}`,
 } as const;

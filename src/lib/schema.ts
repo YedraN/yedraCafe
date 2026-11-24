@@ -3,14 +3,32 @@
  * Solo incluye datos con estado `confirmado`: teléfono, horario, email y menú
  * aparecerán automáticamente cuando se confirmen en los datos.
  */
+import { getImage } from 'astro:assets';
 import { business, maps } from '../data/business';
+import { schemaPhotos } from '../data/gallery';
 import { menu } from '../data/menu';
 import { site } from '../data/site';
 import type { DayOfWeek } from '../data/types';
 
 const dayUrl = (d: DayOfWeek) => `https://schema.org/${d}`;
 
-export function cafeSchema(siteUrl: URL) {
+/** Ancho máximo de las fotos del JSON-LD. Google pide alta resolución (mínimo 50 000 píxeles). */
+const SCHEMA_PHOTO_WIDTH = 1200;
+
+/**
+ * URLs absolutas de las fotos reales en JPEG, para `image`.
+ * Se usa JPEG para máxima compatibilidad con los rastreadores. Nunca se amplía el original.
+ */
+async function photoUrls(base: string): Promise<string[]> {
+  const images = await Promise.all(
+    schemaPhotos.map(({ image }) =>
+      getImage({ src: image, width: Math.min(SCHEMA_PHOTO_WIDTH, image.width), format: 'jpg' }),
+    ),
+  );
+  return images.map((img) => new URL(img.src, base).href);
+}
+
+export async function cafeSchema(siteUrl: URL) {
   const base = siteUrl.origin;
   const a = business.address.value;
 
@@ -20,7 +38,7 @@ export function cafeSchema(siteUrl: URL) {
     name: business.name,
     description: site.description,
     url: `${base}/`,
-    image: [new URL(site.ogImage, base).href],
+    image: [...(await photoUrls(base)), new URL(site.ogImage, base).href],
     logo: new URL('/favicon.svg', base).href,
     address: {
       '@type': 'PostalAddress',
@@ -35,14 +53,15 @@ export function cafeSchema(siteUrl: URL) {
       latitude: business.geo.value.latitude,
       longitude: business.geo.value.longitude,
     },
-    hasMap: maps.view,
+    hasMap: maps.place,
     containedInPlace: { '@type': 'Place', name: `${a.district}, ${a.locality}` },
     sameAs: business.social.map((s) => s.url),
   };
 
-  const { phone, email, hours } = business;
+  const { phone, email, hours, cuisine } = business;
   if (phone.status === 'confirmado') schema.telephone = phone.value;
   if (email.status === 'confirmado') schema.email = email.value;
+  if (cuisine.status === 'confirmado') schema.servesCuisine = cuisine.value;
   if (hours.status === 'confirmado') {
     schema.openingHoursSpecification = hours.value.map((h) => ({
       '@type': 'OpeningHoursSpecification',
@@ -78,12 +97,12 @@ export function cafeSchema(siteUrl: URL) {
   return schema;
 }
 
-export function pageGraph(siteUrl: URL, page: { url: URL; title: string; description: string }) {
+export async function pageGraph(siteUrl: URL, page: { url: URL; title: string; description: string }) {
   const base = siteUrl.origin;
   return {
     '@context': 'https://schema.org',
     '@graph': [
-      cafeSchema(siteUrl),
+      await cafeSchema(siteUrl),
       {
         '@type': 'WebSite',
         '@id': `${base}/#website`,
